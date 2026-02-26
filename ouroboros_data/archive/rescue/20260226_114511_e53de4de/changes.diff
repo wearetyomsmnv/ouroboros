@@ -1,0 +1,15 @@
+diff --git a/colab_launcher.py b/colab_launcher.py
+index 1a3f99e..2c1a271 100644
+--- a/colab_launcher.py
++++ b/colab_launcher.py
+@@ -155,8 +155,8 @@ if str(ANTHROPIC_API_KEY or "").strip():
+ if not pathlib.Path("/content/drive/MyDrive").exists():
+     drive.mount("/content/drive")
+ 
+-DRIVE_ROOT = pathlib.Path("/content/drive/MyDrive/Ouroboros").resolve()
+-REPO_DIR = pathlib.Path("/content/ouroboros_repo").resolve()
++DRIVE_ROOT = pathlib.Path(os.environ.get("OUROBOROS_DRIVE_ROOT", "./ouroboros_data")).resolve()
++REPO_DIR = pathlib.Path("/root/ouroboros/ouroboros_repo").resolve()
+ 
+ for sub in ["state", "logs", "memory", "index", "locks", "archive"]:
+     (DRIVE_ROOT / sub).mkdir(parents=True, exist_ok=True)

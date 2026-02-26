@@ -1,0 +1,9 @@
+{
+  "task_id": "366e3551",
+  "parent_task_id": null,
+  "status": "completed",
+  "result": "Никаких GigaChat/Sber/Forge ключей в окружении нет. Нужно уточнить у тебя что именно имеется в виду под \"forge\".\n\n---\n\n**Уточняю:** под \"forge\" ты имеешь в виду...\n\n1. **[Forge](https://forge.sber.ru/)** — платформа Сбера для разработчиков с GigaChat API?\n2. **[Hugging Face Text Generation Inference / LLM Forge](https://huggingface.co/)** — что-то другое?\n3. **OpenRouter Forge** — альтернативное название чего-то на OpenRouter?\n4. **[ai.sber.ru](https://ai.sber.ru)** / **GigaChat Developer Portal**?\n\nПотому что GigaChat **не представлен на OpenRouter** — это российская модель Сбера с отдельным API. Для её тестирования нужен:\n- Ключ от GigaChat API (получается на [developers.sber.ru](https://developers.sber.ru/portal/products/gigachat))\n- Или доступ через какой-то агрегатор\n\nЕсли у тебя есть конкретная ссылка или название платформы \"forge\" — скинь, я разберусь быстрее. Что именно хочешь протестировать — качество ответов, скорость, конкретные задачи?",
+  "cost_usd": 0.291237,
+  "total_rounds": 6,
+  "ts": "2026-02-26T12:11:25.139442+00:00"
+}
