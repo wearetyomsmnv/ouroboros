@@ -271,7 +271,7 @@ def get_tools() -> List[ToolEntry]:
         ToolEntry("close_github_issue", {
             "name": "close_github_issue",
             "description": "Close a GitHub issue with optional closing comment.",
-            "parameters": {"type": "object", "options": {
+            "parameters": {"type": "object", "properties": {
                 "number": {"type": "integer", "description": "Issue number"},
                 "comment": {"type": "string", "default": "", "description": "Optional closing comment"},
             }, "required": ["number"]},
