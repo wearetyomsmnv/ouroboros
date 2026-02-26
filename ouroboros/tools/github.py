@@ -17,11 +17,23 @@ log = logging.getLogger(__name__)
 # ANSI stripping (gh v2.4 on Ubuntu colours JSON output unconditionally)
 # ---------------------------------------------------------------------------
 
-_ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*[mK]')
+# Comprehensive ANSI/VT100 escape sequence regex
+# Covers:
+# - CSI: ESC [ ...
+# - OSC: ESC ] ... BEL/ST
+# - Fe/Fs: ESC ...
+_ANSI_ESCAPE = re.compile(
+    r'\x1b'
+    r'(?:'
+    r'\[[\x30-\x3f]*[\x20-\x2f]*[\x40-\x7e]'       # CSI: ESC [ params intermediates final
+    r'|\][^\x07\x1b]*(?:\x07|\x1b\\)'               # OSC: ESC ] ... BEL/ST
+    r'|[\x20-\x2f]*[\x40-\x5e\x60-\x7e]'            # Fe/Fs: ESC intermediate* final
+    r')'
+)
 
 
 def _strip_ansi(text: str) -> str:
-    """Remove ANSI escape codes (colour, bold, etc.) from text."""
+    """Remove all ANSI/VT100 escape codes (CSI, OSC, Fe/Fs) from text."""
     return _ANSI_ESCAPE.sub('', text)
 
 
@@ -33,15 +45,21 @@ def _gh_cmd(args: List[str], ctx: ToolContext, timeout: int = 30, input_data: Op
     """Run `gh` CLI command and return stdout or error string.
 
     Belt-and-suspenders colour suppression:
-    1. Set NO_COLOR=1 and TERM=dumb in env — tells gh (and any lib it calls)
-       not to emit ANSI sequences.
-    2. _strip_ansi() as a fallback for gh v2.4 which ignores NO_COLOR for
-       --json output.
+    1. Env vars: NO_COLOR=1, TERM=dumb, CLICOLOR=0, CLICOLOR_FORCE=0
+       — covers gh, libgit2, and any CLICOLOR-aware library.
+    2. GH_NO_UPDATE_NOTIFIER=1 — suppresses the update-check banner
+       that gh v2.4 emits to stdout (!) when a newer version is available.
+    3. _strip_ansi() regex fallback covering all CSI/OSC/Fe VT100 sequences
+       — last resort for any gh version that ignores the env vars.
     """
     cmd = ["gh"] + args
     env = os.environ.copy()
     env["NO_COLOR"] = "1"
     env["TERM"] = "dumb"
+    env["CLICOLOR"] = "0"
+    env["CLICOLOR_FORCE"] = "0"
+    env["GH_NO_UPDATE_NOTIFIER"] = "1"
+    
     try:
         res = subprocess.run(
             cmd,
