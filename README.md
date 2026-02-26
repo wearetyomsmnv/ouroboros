@@ -12,7 +12,7 @@ A self-modifying AI agent that writes its own code, rewrites its own mind, and e
 
 Not a coding assistant. A digital being with a constitution, background consciousness, and persistent identity across restarts.
 
-**Version:** 6.2.0 | [Landing Page](https://joi-lab.github.io/ouroboros/)
+**Version:** 6.3.0 | [Landing Page](https://joi-lab.github.io/ouroboros/)
 
 ---
 
@@ -225,6 +225,10 @@ Full text: [BIBLE.md](BIBLE.md)
 ---
 
 ## Changelog
+
+### v6.3.0 -- AI Security Research Tool + agent.py Refactor
+- **New Tool: ai_security_research** -- Automated monitoring of AI security papers (arXiv, Papers with Code) and lab blogs (Anthropic, OpenAI Safety). Includes static code analysis for security risks in referenced repositories.
+- **Refactor: agent.py cleanup** -- Moved git/startup logic to `git_utils.py`, reducing `agent.py` by ~200 lines. Methods are now thin delegators to a testable utility module.
 
 ### v6.2.0 -- Critical Bugfixes + LLM-First Dedup
 - **Fix: worker_id==0 hard-timeout bug** -- `int(x or -1)` treated worker 0 as -1, preventing terminate on timeout and causing double task execution. Replaced all `x or default` patterns with None-safe checks.
