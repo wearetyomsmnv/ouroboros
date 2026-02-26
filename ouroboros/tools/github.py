@@ -86,15 +86,22 @@ def _gh_cmd(args: List[str], ctx: ToolContext, timeout: int = 30, input_data: Op
 def _get_repo_slug(ctx: ToolContext) -> str:
     """Get 'owner/repo' from git remote."""
     try:
+        env = os.environ.copy()
+        env["NO_COLOR"] = "1"
+        env["TERM"] = "dumb"
+        env["CLICOLOR"] = "0"
+        env["CLICOLOR_FORCE"] = "0"
+        env["GH_NO_UPDATE_NOTIFIER"] = "1"
         res = subprocess.run(
             ["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
             cwd=str(ctx.repo_dir),
             capture_output=True,
             text=True,
             timeout=10,
+            env=env,
         )
         if res.returncode == 0 and res.stdout.strip():
-            return res.stdout.strip()
+            return _strip_ansi(res.stdout).strip()
     except Exception:
         log.debug("Failed to get repo slug from gh", exc_info=True)
     user = os.environ.get("GITHUB_USER", "")
