@@ -110,10 +110,16 @@ EXPECTED_TOOLS = [
     "analyze_screenshot", "vlm_query",
     # Message routing
     "forward_to_worker",
+    # AI Security Research
+    "ai_security_search",
+    "ai_security_eval_code",
     # Context management
     "compact_context",
     "list_available_tools",
     "enable_tools",
+    # AI Security Research
+    "ai_security_search",
+    "ai_security_eval_code",
 ]
 
 
