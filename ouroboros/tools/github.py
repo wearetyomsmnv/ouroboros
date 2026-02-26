@@ -30,8 +30,18 @@ def _strip_ansi(text: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _gh_cmd(args: List[str], ctx: ToolContext, timeout: int = 30, input_data: Optional[str] = None) -> str:
-    """Run `gh` CLI command and return stdout or error string."""
+    """Run `gh` CLI command and return stdout or error string.
+
+    Belt-and-suspenders colour suppression:
+    1. Set NO_COLOR=1 and TERM=dumb in env — tells gh (and any lib it calls)
+       not to emit ANSI sequences.
+    2. _strip_ansi() as a fallback for gh v2.4 which ignores NO_COLOR for
+       --json output.
+    """
     cmd = ["gh"] + args
+    env = os.environ.copy()
+    env["NO_COLOR"] = "1"
+    env["TERM"] = "dumb"
     try:
         res = subprocess.run(
             cmd,
@@ -40,6 +50,7 @@ def _gh_cmd(args: List[str], ctx: ToolContext, timeout: int = 30, input_data: Op
             text=True,
             timeout=timeout,
             input=input_data,
+            env=env,
         )
         if res.returncode != 0:
             err = (res.stderr or "").strip()
@@ -260,7 +271,7 @@ def get_tools() -> List[ToolEntry]:
         ToolEntry("close_github_issue", {
             "name": "close_github_issue",
             "description": "Close a GitHub issue with optional closing comment.",
-            "parameters": {"type": "object", "properties": {
+            "parameters": {"type": "object", "options": {
                 "number": {"type": "integer", "description": "Issue number"},
                 "comment": {"type": "string", "default": "", "description": "Optional closing comment"},
             }, "required": ["number"]},
