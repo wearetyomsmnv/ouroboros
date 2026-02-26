@@ -5,12 +5,25 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import subprocess
 from typing import Any, Dict, List, Optional
 
 from ouroboros.tools.registry import ToolContext, ToolEntry
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# ANSI stripping (gh v2.4 on Ubuntu colours JSON output unconditionally)
+# ---------------------------------------------------------------------------
+
+_ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*[mK]')
+
+
+def _strip_ansi(text: str) -> str:
+    """Remove ANSI escape codes (colour, bold, etc.) from text."""
+    return _ANSI_ESCAPE.sub('', text)
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -32,7 +45,7 @@ def _gh_cmd(args: List[str], ctx: ToolContext, timeout: int = 30, input_data: Op
             err = (res.stderr or "").strip()
             # Only return first line of stderr, truncated to 200 chars for security
             return f"⚠️ GH_ERROR: {err.split(chr(10))[0][:200]}"
-        return res.stdout.strip()
+        return _strip_ansi(res.stdout).strip()
     except FileNotFoundError:
         return "⚠️ GH_ERROR: `gh` CLI not found."
     except subprocess.TimeoutExpired:
@@ -200,7 +213,6 @@ def _create_issue(ctx: ToolContext, title: str, body: str = "", labels: str = ""
         # For existing issue, add labels separately
         if not raw.startswith("⚠️"):
             # Extract issue number from URL in raw output
-            import re
             match = re.search(r'/issues/(\d+)', raw)
             if match:
                 issue_num = int(match.group(1))
