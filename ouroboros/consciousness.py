@@ -185,6 +185,7 @@ class BackgroundConsciousness:
 
         total_cost = 0.0
         final_content = ""
+        last_content = ""  # last content seen in any round, even if tool_calls followed
         round_idx = 0
         all_pending_events = []  # Accumulate events across all tool calls
 
@@ -237,6 +238,8 @@ class BackgroundConsciousness:
 
                 content = msg.get("content") or ""
                 tool_calls = msg.get("tool_calls") or []
+                if content:
+                    last_content = content  # track regardless of tool_calls
 
                 if self._paused:
                     break
@@ -273,7 +276,7 @@ class BackgroundConsciousness:
             append_jsonl(self._drive_root / "logs" / "events.jsonl", {
                 "ts": utc_now_iso(),
                 "type": "consciousness_thought",
-                "thought_preview": (final_content or "")[:300],
+                "thought_preview": (final_content or last_content or "")[:300],
                 "cost_usd": total_cost,
                 "rounds": round_idx,
                 "model": model,
