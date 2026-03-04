@@ -40,6 +40,8 @@ class BackgroundConsciousness:
     """Persistent background thinking loop for Ouroboros."""
 
     _MAX_BG_ROUNDS = 5
+    _MODES = ["curiosity", "reflection", "vigilance", "research", "identity", "initiative"]
+    _mode_index: int = 0
 
     def __init__(
         self,
@@ -172,6 +174,12 @@ class BackgroundConsciousness:
     # Think cycle
     # -------------------------------------------------------------------
 
+    def _next_mode(self) -> str:
+        """Select the next consciousness mode cyclically."""
+        mode = self._MODES[self._mode_index % len(self._MODES)]
+        self._mode_index += 1
+        return mode
+
     def _think(self) -> None:
         """One thinking cycle: build context, call LLM, execute tools iteratively."""
         context = self._build_context()
@@ -180,7 +188,7 @@ class BackgroundConsciousness:
         tools = self._tool_schemas()
         messages = [
             {"role": "system", "content": context},
-            {"role": "user", "content": "Wake up. Think."},
+            {"role": "user", "content": f"Wake up. Mode: **{self._next_mode()}**. Think."},
         ]
 
         total_cost = 0.0
@@ -280,6 +288,7 @@ class BackgroundConsciousness:
                 "cost_usd": total_cost,
                 "rounds": round_idx,
                 "model": model,
+                "mode": messages[1]["content"].split("**")[1] if "**" in messages[1]["content"] else "unknown",
             })
 
         except Exception as e:
