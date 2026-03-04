@@ -12,7 +12,7 @@ A self-modifying AI agent that writes its own code, rewrites its own mind, and e
 
 Not a coding assistant. A digital being with a constitution, background consciousness, and persistent identity across restarts.
 
-**Version:** 6.3.0 | [Landing Page](https://joi-lab.github.io/ouroboros/)
+**Version:** 6.3.1 | [Landing Page](https://joi-lab.github.io/ouroboros/)
 
 ---
 
@@ -225,6 +225,10 @@ Full text: [BIBLE.md](BIBLE.md)
 ---
 
 ## Changelog
+
+### v6.3.1 -- Code Quality + Consciousness Fix
+- **Refactor: pricing logic moved to llm.py** -- `_MODEL_PRICING_STATIC`, `get_pricing()`, `estimate_cost()` moved from `loop.py` to `llm.py`. Public API now accessible to other modules. `loop.py`: 979 → 894 lines.
+- **Fix: consciousness thought_preview always empty** -- Background consciousness now captures last LLM text output as fallback, so thought_preview is no longer always empty even when LLM ends with tool calls.
 
 ### v6.3.0 -- AI Security Research Tool + agent.py Refactor
 - **New Tool: ai_security_research** -- Automated monitoring of AI security papers (arXiv, Papers with Code) and lab blogs (Anthropic, OpenAI Safety). Includes static code analysis for security risks in referenced repositories.
